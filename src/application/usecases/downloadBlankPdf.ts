@@ -10,7 +10,8 @@ export const downloadBlankPdf = async (
   designLayout: DesignLayout
 ): Promise<void> => {
   const { bytes, filename } = await createBlankPdf(designLayout);
-  const blob = new Blob([bytes], { type: 'application/pdf' });
+  // TS2322対応: 型定義の不整合を回避するため as any でキャストします
+  const blob = new Blob([bytes as any], { type: 'application/pdf' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
