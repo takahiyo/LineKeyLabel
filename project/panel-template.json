@@ -1,0 +1,15 @@
+{
+  "_comment": "SSOT（唯一の真実）として管理し、精度要件は±0.3mmです。",
+  "id": "panel-template",
+  "bounds_mm": {
+    "width": 297,
+    "height": 210
+  },
+  "holes_mm": [
+    {
+      "x": 5,
+      "y": 5,
+      "diameter": 3
+    }
+  ]
+}

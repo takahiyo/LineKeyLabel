@@ -1,0 +1,9 @@
+{
+  "_comment": "SSOT（唯一の真実）として管理し、精度要件は±0.3mmです。",
+  "source": "data.csv",
+  "key": "panel_id",
+  "fields": {
+    "label_text": "label.text",
+    "code_text": "code.text"
+  }
+}
