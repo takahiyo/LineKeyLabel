@@ -1,4 +1,3 @@
-import React from 'react';
 import { SsotRepository } from '../domain/repositories/SsotRepository';
 import { loadSsotData } from '../application/usecases/loadSsotData';
 import { downloadBlankPdf } from '../application/usecases/downloadBlankPdf';
