@@ -1,0 +1,12 @@
+[
+  {
+    "op": "replace",
+    "path": "/holes_mm/0/diameter",
+    "value": 3.2
+  },
+  {
+    "op": "add",
+    "path": "/label_text",
+    "value": "試作ラベルA-差分"
+  }
+]
