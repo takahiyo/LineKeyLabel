@@ -1,6 +1,7 @@
 import { SsotRepository } from '../domain/repositories/SsotRepository';
 import { loadSsotData } from '../application/usecases/loadSsotData';
 import { downloadBlankPdf } from '../application/usecases/downloadBlankPdf';
+import { uiText } from '../constants/uiText';
 import { PanelCanvas } from './components/PanelCanvas';
 
 /**
@@ -25,11 +26,11 @@ export const App = () => {
     <div className="app">
       <div className="header">
         <div>
-          <h1>Line Key Label</h1>
-          <p>SSOT参照のみでパネル寸法を描画しています。</p>
+          <h1>{uiText.appTitle}</h1>
+          <p>{uiText.appDescription}</p>
         </div>
         <button type="button" onClick={handleDownload}>
-          A4横PDFをダウンロード
+          {uiText.downloadButtonLabel}
         </button>
       </div>
       <div className="canvas-wrapper">

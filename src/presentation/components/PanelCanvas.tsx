@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Layer, Rect, Stage } from 'react-konva';
+import { uiConfig } from '../../config/uiConfig';
 import type { PanelTemplate } from '../../domain/types/panelTemplate';
 
 type PanelCanvasProps = {
@@ -66,9 +67,9 @@ export const PanelCanvas = ({ panelTemplate }: PanelCanvasProps) => {
             y={0}
             width={stageWidth}
             height={stageHeight}
-            stroke="#1f2937"
-            strokeWidth={2}
-            fill="#f9fafb"
+            stroke={uiConfig.canvas.borderColor}
+            strokeWidth={uiConfig.canvas.borderWidth}
+            fill={uiConfig.canvas.backgroundColor}
           />
         </Layer>
       </Stage>
