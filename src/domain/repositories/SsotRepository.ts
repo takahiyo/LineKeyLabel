@@ -1,5 +1,5 @@
-import panelTemplateJson from '../../../project/panel-template.json';
-import designLayoutJson from '../../../project/design.json';
+import panelTemplateJson from '../../../panel-template.json';
+import designLayoutJson from '../../../design.json';
 import type { PanelTemplate } from '../types/panelTemplate';
 import type { DesignLayout } from '../types/designLayout';
 
