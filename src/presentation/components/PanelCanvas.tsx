@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Layer, Rect, Stage } from 'react-konva';
 import type { PanelTemplate } from '../../domain/types/panelTemplate';
 
