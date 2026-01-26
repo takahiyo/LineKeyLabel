@@ -1,6 +1,0 @@
-# SSOT（唯一の真実）として管理し、精度要件は±0.3mmです。
-panel_id,label_text,code_text
-panel1,試作ラベルA,ABC-001
-panel2,試作ラベルB,ABC-002
-panel3,試作ラベルC,ABC-003
-panel4,試作ラベルD,ABC-004
