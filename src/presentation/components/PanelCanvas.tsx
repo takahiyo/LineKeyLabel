@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
-import { Layer, Rect, Stage } from 'react-konva';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Image as KonvaImage, Layer, Rect, Stage } from 'react-konva';
 import { uiConfig } from '../../config/uiConfig';
 import type { PanelTemplate } from '../../domain/types/panelTemplate';
 
 type PanelCanvasProps = {
   panelTemplate: PanelTemplate;
+  bgImageSrc?: string | null;
+  bgOpacity?: number;
 };
 
 /**
@@ -50,7 +52,11 @@ const useElementWidth = (element: HTMLDivElement | null): number => {
  * @accuracy SSOTのmm値から描画比率を算出し、寸法誤差を抑えます。
  * @algorithm コンテナ幅に合わせたスケールを算出し矩形を表示します。
  */
-export const PanelCanvas = ({ panelTemplate }: PanelCanvasProps) => {
+export const PanelCanvas = ({
+  panelTemplate,
+  bgImageSrc,
+  bgOpacity = 0.5,
+}: PanelCanvasProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const containerWidth = useElementWidth(containerRef.current);
   const { width: boundsWidth, height: boundsHeight } = panelTemplate.bounds_mm;
@@ -58,10 +64,48 @@ export const PanelCanvas = ({ panelTemplate }: PanelCanvasProps) => {
   const stageWidth = boundsWidth * scale;
   const stageHeight = boundsHeight * scale;
 
+  const [image, setImage] = useState<HTMLImageElement | undefined>(undefined);
+  useEffect(() => {
+    if (!bgImageSrc) {
+      setImage(undefined);
+      return;
+    }
+    const img = new Image();
+    img.src = bgImageSrc;
+    img.onload = () => setImage(img);
+  }, [bgImageSrc]);
+
+  const backgroundImage = useMemo(() => {
+    if (!image) {
+      return null;
+    }
+    const widthRatio = stageWidth / image.width;
+    const heightRatio = stageHeight / image.height;
+    const imageScale = Math.min(widthRatio, heightRatio);
+    const imageWidth = image.width * imageScale;
+    const imageHeight = image.height * imageScale;
+    return {
+      width: imageWidth,
+      height: imageHeight,
+      x: (stageWidth - imageWidth) / 2,
+      y: (stageHeight - imageHeight) / 2,
+    };
+  }, [image, stageWidth, stageHeight]);
+
   return (
     <div ref={containerRef}>
       <Stage width={stageWidth} height={stageHeight}>
         <Layer>
+          {image && backgroundImage && (
+            <KonvaImage
+              image={image}
+              x={backgroundImage.x}
+              y={backgroundImage.y}
+              width={backgroundImage.width}
+              height={backgroundImage.height}
+              opacity={bgOpacity}
+            />
+          )}
           <Rect
             x={0}
             y={0}
@@ -69,7 +113,7 @@ export const PanelCanvas = ({ panelTemplate }: PanelCanvasProps) => {
             height={stageHeight}
             stroke={uiConfig.canvas.borderColor}
             strokeWidth={uiConfig.canvas.borderWidth}
-            fill={uiConfig.canvas.backgroundColor}
+            fill={image ? undefined : uiConfig.canvas.backgroundColor}
           />
         </Layer>
       </Stage>
