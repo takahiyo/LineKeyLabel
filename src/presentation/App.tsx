@@ -1,8 +1,10 @@
+import { ChangeEvent, useState } from 'react';
 import { SsotRepository } from '../domain/repositories/SsotRepository';
 import { loadSsotData } from '../application/usecases/loadSsotData';
 import { downloadBlankPdf } from '../application/usecases/downloadBlankPdf';
 import { uiText } from '../constants/uiText';
 import { PanelCanvas } from './components/PanelCanvas';
+import { useThemeSync } from './hooks/useThemeSync';
 
 /**
  * @ssot SSOTの参照データのみを表示に使用します。
@@ -10,8 +12,11 @@ import { PanelCanvas } from './components/PanelCanvas';
  * @algorithm SSOT読込→Konva描画→PDFダウンロード導線を提供します。
  */
 export const App = () => {
+  useThemeSync();
+
   const repository = new SsotRepository();
   const { panelTemplate, designLayout } = loadSsotData(repository);
+  const [bgImageSrc, setBgImageSrc] = useState<string | null>(null);
 
   /**
    * @ssot SSOTのDesignLayoutを参照してPDFを生成します。
@@ -22,6 +27,23 @@ export const App = () => {
     await downloadBlankPdf(designLayout);
   };
 
+  /**
+   * @ssot アップロード画像をDataURLとして状態に取り込みます。
+   * @accuracy 選択画像の内容をそのまま描画用に渡します。
+   * @algorithm FileReaderで読み取り、Canvasへ渡すためのstateに格納します。
+   */
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setBgImageSrc(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="app">
       <div className="header">
@@ -29,12 +51,23 @@ export const App = () => {
           <h1>{uiText.appTitle}</h1>
           <p>{uiText.appDescription}</p>
         </div>
-        <button type="button" onClick={handleDownload}>
-          {uiText.downloadButtonLabel}
-        </button>
+        <div className="header-actions">
+          <label className="upload-button">
+            {uiText.uploadButtonLabel}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="upload-input"
+            />
+          </label>
+          <button type="button" onClick={handleDownload}>
+            {uiText.downloadButtonLabel}
+          </button>
+        </div>
       </div>
       <div className="canvas-wrapper">
-        <PanelCanvas panelTemplate={panelTemplate} />
+        <PanelCanvas panelTemplate={panelTemplate} bgImageSrc={bgImageSrc} />
       </div>
     </div>
   );
