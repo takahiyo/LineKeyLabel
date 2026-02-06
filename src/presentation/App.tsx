@@ -3,6 +3,8 @@ import { SsotRepository } from '../domain/repositories/SsotRepository';
 import { loadSsotData } from '../application/usecases/loadSsotData';
 import { downloadBlankPdf } from '../application/usecases/downloadBlankPdf';
 import { uiText } from '../constants/uiText';
+import { uploadAcceptTypes, uploadConfig } from '../config/uploadConfig';
+import { renderPdfPageToDataUrl } from '../infrastructure/pdf/renderPdfPageToDataUrl';
 import { PanelCanvas } from './components/PanelCanvas';
 import { useThemeSync } from './hooks/useThemeSync';
 
@@ -32,16 +34,29 @@ export const App = () => {
    * @accuracy 選択画像の内容をそのまま描画用に渡します。
    * @algorithm FileReaderで読み取り、Canvasへ渡すためのstateに格納します。
    */
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) {
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      setBgImageSrc(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+
+    if (file.type === uploadConfig.pdfMimeType) {
+      const arrayBuffer = await file.arrayBuffer();
+      const dataUrl = await renderPdfPageToDataUrl(arrayBuffer, {
+        pageNumber: uploadConfig.pdfPageNumber,
+        scale: uploadConfig.pdfRenderScale,
+      });
+      setBgImageSrc(dataUrl);
+      return;
+    }
+
+    if (uploadConfig.imageMimeTypes.includes(file.type)) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setBgImageSrc(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -56,7 +71,7 @@ export const App = () => {
             {uiText.uploadButtonLabel}
             <input
               type="file"
-              accept="image/*"
+              accept={uploadAcceptTypes}
               onChange={handleFileChange}
               className="upload-input"
             />
